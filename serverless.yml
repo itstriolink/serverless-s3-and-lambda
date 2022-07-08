@@ -8,12 +8,14 @@ provider:
   runtime: nodejs16.x
   stage: ${opt:stage, 'dev'}
   region: us-east-1
-
-  iamRoleStatements:
-    - Effect: "Allow"
-      Action:
-        - s3:*
-      Resource: "*"
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - s3:GetObject
+            - s3:PutObject
+          Resource: "arn:aws:s3:::${self:custom.bucketName}/*"
 
 plugins:
   - serverless-offline
