@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+
+  # Run terragrunt with ./.docker.sh
+  #  AWS Credentials are stored in the folder .aws
+  #  You will be prompted to create them if they do not exist
+  terragrunt:
+    # pinned devopsinfra/docker-terragrunt:aws-latest
+    image: devopsinfra/docker-terragrunt:aws-tf-1.2.5-tg-0.38.5
+
+    # start interactive shell with startup script
+    command: bash -c "echo AWS_PROFILE=$AWS_PROFILE;aws configure --profile $AWS_PROFILE; bash"
+    stdin_open: true
+    tty: true
+
+    volumes:
+      - ./:/data
+      - ./.aws:/root/.aws
+      - terragrunt-cache:/terragrunt-cache
+
+    environment:
+      - TERRAGRUNT_DOWNLOAD=/terragrunt-cache
+
+volumes:
+  terragrunt-cache:
