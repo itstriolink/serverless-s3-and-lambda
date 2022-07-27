@@ -1,7 +1,5 @@
 import serverless from "serverless-http";
 import express, { Request, Response } from "express";
-import multer, { FileFilterCallback } from "multer";
-import multerS3 from "multer-s3";
 import {
   S3Client,
   HeadObjectCommand,
