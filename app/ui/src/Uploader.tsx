@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import "react-dropzone-uploader/dist/styles.css";
 import Dropzone from "react-dropzone-uploader";
 import axios from "axios";
@@ -72,13 +72,13 @@ const Uploader = () => {
         multiple={false}
         canCancel={false}
         submitButtonDisabled={isSubmitting}
-        inputContent="Drop A File"
+        accept="image/jpeg, image/png"
+        inputContent="Upload an image"
         styles={{
           dropzone: { height: 200, width: 400 },
           dropzoneActive: { borderColor: "green" },
         }}
       />
-
       {allowViewFiles && (
         <>
           <button
@@ -93,18 +93,17 @@ const Uploader = () => {
 
           {error && <p>{error}</p>}
 
-          <ul>
-            {s3Links.length > 0 &&
-              s3Links.map((link) => {
-                return (
-                  <li>
-                    <a href={link} target="_blank">
-                      {link}
-                    </a>
-                  </li>
-                );
-              })}
-          </ul>
+          {s3Links.length > 0 && (
+            <ul>
+              {s3Links.map((link) => (
+                <li>
+                  <a href={link} target="_blank" rel="noreferrer">
+                    {link}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
         </>
       )}
     </div>
