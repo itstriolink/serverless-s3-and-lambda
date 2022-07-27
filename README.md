@@ -1,4 +1,4 @@
-# Terraform + Serverl
+# S3 and Lambda image resizer (Infrastructure and Application)
 
 Description
 ------
