@@ -18,20 +18,18 @@ const Uploader = () => {
   const handleSubmit = async (files: any) => {
     setIsSubmitting(true);
     const f = files[0];
+
     try {
       const response = await axios.get("http://localhost:3000/dev/presign-url");
 
-      await axios.put(
-        response.data.url,
-        {
-          body: f["file"],
+      await fetch(response.data.url, {
+        method: "PUT",
+        body: f["file"],
+        headers: {
+          "Content-Type": f.type,
         },
-        {
-          headers: { "Content-Type": f.type },
-        }
-      );
+      });
 
-      alert("File uploaded successfully to S3");
       setAllowViewFiles(true);
       setImageId(response.data.id);
     } catch (error) {
@@ -79,6 +77,7 @@ const Uploader = () => {
           dropzoneActive: { borderColor: "green" },
         }}
       />
+
       {allowViewFiles && (
         <>
           <button
@@ -94,15 +93,21 @@ const Uploader = () => {
           {error && <p>{error}</p>}
 
           {s3Links.length > 0 && (
-            <ul>
-              {s3Links.map((link) => (
-                <li>
-                  <a href={link} target="_blank" rel="noreferrer">
-                    {link}
-                  </a>
-                </li>
-              ))}
-            </ul>
+            <>
+              <ul
+                style={{
+                  fontSize: "1rem",
+                }}
+              >
+                {s3Links.map((link) => (
+                  <li>
+                    <a href={link} target="_blank" rel="noreferrer">
+                      {link}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </>
           )}
         </>
       )}

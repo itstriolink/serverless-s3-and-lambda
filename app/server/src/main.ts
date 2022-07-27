@@ -26,8 +26,8 @@ app.all("/presign-url", async (req: Request, res: Response) => {
 
   const command = new PutObjectCommand({
     Bucket: process.env.S3_BUCKET_NAME,
-    Key: `uploads/${uuid}`,
-    ContentType: "image/png"
+    Key: `uploads/${uuid}.jpeg`,
+    ContentType: "image/jpeg"
   });
 
   const signedUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
@@ -62,7 +62,7 @@ app.get("/image/:id", async (req: Request, res: Response) => {
   }
 
   return res.status(200).json({
-    images: links
+    links
   });
 });
 
