@@ -42,6 +42,8 @@ const Uploader = () => {
 
   const handleGetLinks = async (e: any) => {
     setError("");
+    sets3Links([]);
+
     try {
       const response = await axios.get(
         `http://localhost:3000/dev/image/${imageId}`
