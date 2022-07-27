@@ -5,10 +5,14 @@ import axios from "axios";
 
 const Uploader = () => {
   const handleChangeStatus = ({ meta, remove }: any, status: any) => {
+    setAllowViewFiles(false);
     setTriggerChange(Math.random());
+    sets3Links([]);
+    setError("");
   };
 
   const [_, setTriggerChange] = useState<number>(Math.random());
+  const [isUploading, setisUploading] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [allowViewFiles, setAllowViewFiles] = useState<boolean>(false);
   const [s3Links, sets3Links] = useState<string[]>([]);
@@ -16,7 +20,7 @@ const Uploader = () => {
 
   const [imageId, setImageId] = useState<string>("");
   const handleSubmit = async (files: any) => {
-    setIsSubmitting(true);
+    setisUploading(true);
     const f = files[0];
 
     try {
@@ -36,13 +40,14 @@ const Uploader = () => {
       console.error(error);
       alert("File failed to upload, please check the logs.");
     } finally {
-      setIsSubmitting(false);
+      setisUploading(false);
     }
   };
 
   const handleGetLinks = async (e: any) => {
     setError("");
     sets3Links([]);
+    setIsSubmitting(true);
 
     try {
       const response = await axios.get(
@@ -54,6 +59,8 @@ const Uploader = () => {
       setError(
         "The links are not ready yet, please wait a moment before trying again."
       );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -71,7 +78,8 @@ const Uploader = () => {
         maxFiles={1}
         multiple={false}
         canCancel={false}
-        submitButtonDisabled={isSubmitting}
+        submitButtonDisabled={isUploading}
+        submitButtonContent={isUploading ? "Uploading..." : "Upload"}
         accept="image/jpeg, image/png"
         inputContent="Upload an image"
         styles={{
@@ -87,18 +95,24 @@ const Uploader = () => {
             style={{
               width: 400,
             }}
+            disabled={isSubmitting}
             onClick={(e) => handleGetLinks(e)}
           >
-            Get links
+            {isSubmitting ? "Getting Links..." : "Get links"}
           </button>
 
           {error && <p>{error}</p>}
 
           {s3Links.length > 0 && (
-            <>
+            <div
+              style={{
+                marginTop: "10px",
+              }}
+            >
               <ul
                 style={{
-                  fontSize: "1rem",
+                  fontSize: "0.9rem",
+                  lineHeight: "1.4rem",
                 }}
               >
                 {s3Links.map((link) => (
@@ -109,7 +123,7 @@ const Uploader = () => {
                   </li>
                 ))}
               </ul>
-            </>
+            </div>
           )}
         </>
       )}
