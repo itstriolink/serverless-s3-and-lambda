@@ -19,7 +19,7 @@ const Uploader = () => {
     setIsSubmitting(true);
     const f = files[0];
     try {
-      const response = await axios.get("http://localhost:3000/dev/presign-url");
+      const response = await axios.get("https://u888lhimy5.execute-api.us-east-1.amazonaws.com/dev/presign-url");
 
       await axios.put(
         response.data.url,

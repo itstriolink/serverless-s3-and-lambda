@@ -1,7 +1,5 @@
 import serverless from "serverless-http";
 import express, { Request, Response } from "express";
-import multer, { FileFilterCallback } from "multer";
-import multerS3 from "multer-s3";
 import {
   S3Client,
   HeadObjectCommand,
@@ -11,10 +9,10 @@ import { v4 } from "uuid";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const s3 = new S3Client({
-  credentials: {
-    accessKeyId: process.env.S3_ACCESS_KEY as string,
-    secretAccessKey: process.env.S3_ACCESS_SECRET as string
-  },
+  // credentials: {
+  //   accessKeyId: process.env.S3_ACCESS_KEY as string,
+  //   secretAccessKey: process.env.S3_ACCESS_SECRET as string
+  // },
   region: "us-east-1"
 });
 
@@ -22,20 +20,33 @@ const app = express();
 app.use(express.json());
 
 app.all("/presign-url", async (req: Request, res: Response) => {
-  const uuid = v4();
+  try {
+    const uuid = v4();
 
-  const command = new PutObjectCommand({
-    Bucket: process.env.S3_BUCKET_NAME,
-    Key: `uploads/${uuid}`,
-    ContentType: "image/png"
-  });
+    const command = new PutObjectCommand({
+      Bucket: process.env.S3_BUCKET_NAME,
+      Key: `uploads/${uuid}`,
+      ContentType: "image/png"
+    });
 
-  const signedUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
+    const signedUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
 
-  return res.status(200).json({
-    id: uuid,
-    url: signedUrl
-  });
+    console.log({
+      Bucket: process.env.S3_BUCKET_NAME,
+      Key: `uploads/${uuid}`,
+      ContentType: "image/png"
+    });
+
+    console.log(signedUrl);
+
+    return res.status(200).json({
+      id: uuid,
+      url: signedUrl
+    });
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
 });
 
 app.get("/image/:id", async (req: Request, res: Response) => {

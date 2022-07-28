@@ -2,6 +2,20 @@ service: upload-image
 
 provider:
   name: aws
+  iam:
+    role:
+      statements:
+        # Allow functions to list all buckets
+        - Effect: Allow
+          Action: 's3:ListBucket'
+          Resource: '*'
+        # Allow functions to read/write objects in a bucket
+        - Effect: Allow
+          Action:
+            - 's3:GetObject'
+            - 's3:PutObject'
+          Resource:
+            - 'arn:aws:s3:::myapp-lambda-dev-uploads/*'
   runtime: nodejs16.x
   stage: dev
   region: us-east-1

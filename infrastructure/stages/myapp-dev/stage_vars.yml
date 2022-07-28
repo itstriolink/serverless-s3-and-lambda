@@ -1,8 +1,0 @@
----
-stage_slug: "myapp-dev"
-
-# keep cidr unique to allow for inner-stack communication
-aws_vpc_cidr_block:  "172.20.0.0/16"
-
-zone_id: "Z00000000000000000000" # myapp.com
-hosted_zone: "dev.myapp.com"

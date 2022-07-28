@@ -31,18 +31,8 @@ variable "acceleration_status" {
     default = "Suspended"
 }
 
-variable "lifecycle_rules" {
-    description = "Lifecycle rules you want to implement"
-    type = map(
-        object({
-            type = string
-            days = optional(number)
-            abort_incomplete_multipart_upload_days = optional(number)
-            date = optional(string)
-            expired_object_delete_marker = optional(bool)
-            storage_class = optional(string)
-            prefix = optional(string)
-        })
-    )
-    default = {}
+variable "lambda_arn" {
+    description = "ARN of Lambda to trigger"
+    type = string
 }
+
