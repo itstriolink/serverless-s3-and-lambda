@@ -7,27 +7,25 @@ import {
 } from "@aws-sdk/client-s3";
 import { v4 } from "uuid";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import cors from "cors";
 
 const s3 = new S3Client({
-  // credentials: {
-  //   accessKeyId: process.env.S3_ACCESS_KEY as string,
-  //   secretAccessKey: process.env.S3_ACCESS_SECRET as string
-  // },
   region: "us-east-1"
 });
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 app.all("/presign-url", async (req: Request, res: Response) => {
   try {
     const uuid = v4();
 
-  const command = new PutObjectCommand({
-    Bucket: process.env.S3_BUCKET_NAME,
-    Key: `uploads/${uuid}.jpeg`,
-    ContentType: "image/jpeg"
-  });
+    const command = new PutObjectCommand({
+      Bucket: process.env.S3_BUCKET_NAME,
+      Key: `uploads/${uuid}.jpeg`,
+      ContentType: "image/jpeg"
+    });
 
     const signedUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
 
