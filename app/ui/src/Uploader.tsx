@@ -1,14 +1,18 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import "react-dropzone-uploader/dist/styles.css";
 import Dropzone from "react-dropzone-uploader";
 import axios from "axios";
 
 const Uploader = () => {
   const handleChangeStatus = ({ meta, remove }: any, status: any) => {
+    setAllowViewFiles(false);
     setTriggerChange(Math.random());
+    sets3Links([]);
+    setError("");
   };
 
   const [_, setTriggerChange] = useState<number>(Math.random());
+  const [isUploading, setisUploading] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [allowViewFiles, setAllowViewFiles] = useState<boolean>(false);
   const [s3Links, sets3Links] = useState<string[]>([]);
@@ -16,34 +20,35 @@ const Uploader = () => {
 
   const [imageId, setImageId] = useState<string>("");
   const handleSubmit = async (files: any) => {
-    setIsSubmitting(true);
+    setisUploading(true);
     const f = files[0];
+
     try {
       const response = await axios.get("https://u888lhimy5.execute-api.us-east-1.amazonaws.com/dev/presign-url");
 
-      await axios.put(
-        response.data.url,
-        {
-          body: f["file"],
+      await fetch(response.data.url, {
+        method: "PUT",
+        body: f["file"],
+        headers: {
+          "Content-Type": f.type,
         },
-        {
-          headers: { "Content-Type": f.type },
-        }
-      );
+      });
 
-      alert("File uploaded successfully to S3");
       setAllowViewFiles(true);
       setImageId(response.data.id);
     } catch (error) {
       console.error(error);
       alert("File failed to upload, please check the logs.");
     } finally {
-      setIsSubmitting(false);
+      setisUploading(false);
     }
   };
 
   const handleGetLinks = async (e: any) => {
     setError("");
+    sets3Links([]);
+    setIsSubmitting(true);
+
     try {
       const response = await axios.get(
         `http://localhost:3000/dev/image/${imageId}`
@@ -54,6 +59,8 @@ const Uploader = () => {
       setError(
         "The links are not ready yet, please wait a moment before trying again."
       );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -71,8 +78,10 @@ const Uploader = () => {
         maxFiles={1}
         multiple={false}
         canCancel={false}
-        submitButtonDisabled={isSubmitting}
-        inputContent="Drop A File"
+        submitButtonDisabled={isUploading}
+        submitButtonContent={isUploading ? "Uploading..." : "Upload"}
+        accept="image/jpeg, image/png"
+        inputContent="Upload an image"
         styles={{
           dropzone: { height: 200, width: 400 },
           dropzoneActive: { borderColor: "green" },
@@ -86,25 +95,36 @@ const Uploader = () => {
             style={{
               width: 400,
             }}
+            disabled={isSubmitting}
             onClick={(e) => handleGetLinks(e)}
           >
-            Get links
+            {isSubmitting ? "Getting Links..." : "Get links"}
           </button>
 
           {error && <p>{error}</p>}
 
-          <ul>
-            {s3Links.length > 0 &&
-              s3Links.map((link) => {
-                return (
+          {s3Links.length > 0 && (
+            <div
+              style={{
+                marginTop: "10px",
+              }}
+            >
+              <ul
+                style={{
+                  fontSize: "0.9rem",
+                  lineHeight: "1.4rem",
+                }}
+              >
+                {s3Links.map((link) => (
                   <li>
-                    <a href={link} target="_blank">
+                    <a href={link} target="_blank" rel="noreferrer">
                       {link}
                     </a>
                   </li>
-                );
-              })}
-          </ul>
+                ))}
+              </ul>
+            </div>
+          )}
         </>
       )}
     </div>
