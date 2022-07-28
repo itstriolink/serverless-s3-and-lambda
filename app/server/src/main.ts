@@ -18,37 +18,25 @@ app.use(express.json());
 app.use(cors());
 
 app.get("/presign-url", async (req: Request, res: Response) => {
-  try {
-    const uuid = v4();
+  const uuid = v4();
 
-    const command = new PutObjectCommand({
-      Bucket: process.env.S3_BUCKET_NAME,
-      Key: `uploads/${uuid}.jpeg`,
-      ContentType: "image/jpeg"
-    });
+  const command = new PutObjectCommand({
+    Bucket: process.env.S3_BUCKET_NAME,
+    Key: `uploads/${uuid}.jpeg`,
+    ContentType: "image/jpeg"
+  });
 
-    const signedUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
+  const signedUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
 
-    console.log({
-      Bucket: process.env.S3_BUCKET_NAME,
-      Key: `uploads/${uuid}`,
-      ContentType: "image/png"
-    });
-
-    console.log(signedUrl);
-
-    return res.status(200).json({
-      id: uuid,
-      url: signedUrl
-    });
-  } catch (e) {
-    console.log(e);
-    throw e;
-  }
+  return res.status(200).json({
+    id: uuid,
+    url: signedUrl
+  });
 });
 
 app.get("/image/:id", async (req: Request, res: Response) => {
   const id = req.params.id;
+
   const command = new HeadObjectCommand({
     Bucket: process.env.S3_BUCKET_NAME,
     Key: "images/128x128/" + id + ".jpeg"
