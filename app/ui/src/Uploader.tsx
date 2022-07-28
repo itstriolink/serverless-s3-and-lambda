@@ -24,7 +24,7 @@ const Uploader = () => {
     const f = files[0];
 
     try {
-      const response = await axios.get("https://u888lhimy5.execute-api.us-east-1.amazonaws.com/dev/presign-url");
+      const response = await axios.get("http://localhost:3000/dev/presign-url");
 
       await fetch(response.data.url, {
         method: "PUT",
@@ -53,6 +53,7 @@ const Uploader = () => {
       const response = await axios.get(
         `http://localhost:3000/dev/image/${imageId}`
       );
+
 
       sets3Links(response.data.links);
     } catch (error) {
