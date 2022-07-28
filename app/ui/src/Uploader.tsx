@@ -24,8 +24,8 @@ const Uploader = () => {
     const f = files[0];
 
     try {
-      const response = await axios.get("http://localhost:3000/dev/presign-url");
-
+      const response = await axios.get("https://q4hoq7l5m4.execute-api.us-east-1.amazonaws.com/dev/presign-url");
+      
       await fetch(response.data.url, {
         method: "PUT",
         body: f["file"],
@@ -51,7 +51,7 @@ const Uploader = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:3000/dev/image/${imageId}`
+        `https://q4hoq7l5m4.execute-api.us-east-1.amazonaws.com/dev/image/${imageId}`
       );
 
 

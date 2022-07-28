@@ -1,4 +1,4 @@
-service: upload-image
+service: s3-lambda-resize-api
 
 provider:
   name: aws
@@ -15,9 +15,9 @@ provider:
             - 's3:GetObject'
             - 's3:PutObject'
           Resource:
-            - 'arn:aws:s3:::myapp-lambda-dev-uploads/*'
+            - 'arn:aws:s3:::s3-lambda-resize-dev-uploads/*'
   runtime: nodejs16.x
-  stage: dev
+  stage: ${opt:stage, 'dev'}
   region: us-east-1
   memorySize: 128
 
@@ -27,14 +27,29 @@ plugins:
   - serverless-dotenv-plugin
 
 functions:
-  app:
+  getPresignUrl:
     handler: src/main.handler
     events:
       - http:
-          path: /
-          method: ANY
+          path: /presign-url
+          method: GET
           cors: true
+  getImageLinks:
+    handler: src/main.handler
+    events:
       - http:
-          path: /{proxy+}
-          method: ANY
+          path: /image/{id}
+          method: GET
           cors: true
+  # If you want to have all routes under a single lambda (for your whole app), use the solution below
+  # other:
+  #   handler: src/main.handler
+  #   events:
+  #     - http:
+  #         path: /
+  #         method: ANY
+  #         cors: true
+  #     - http:
+  #         path: /{proxy+}
+  #         method: ANY
+  #         cors: true

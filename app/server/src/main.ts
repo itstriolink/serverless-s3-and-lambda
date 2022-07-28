@@ -1,5 +1,6 @@
 import serverless from "serverless-http";
 import express, { Request, Response } from "express";
+import cors from "cors";
 import {
   S3Client,
   HeadObjectCommand,
@@ -7,7 +8,6 @@ import {
 } from "@aws-sdk/client-s3";
 import { v4 } from "uuid";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import cors from "cors";
 
 const s3 = new S3Client({
   region: "us-east-1"
@@ -17,7 +17,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-app.all("/presign-url", async (req: Request, res: Response) => {
+app.get("/presign-url", async (req: Request, res: Response) => {
   try {
     const uuid = v4();
 
